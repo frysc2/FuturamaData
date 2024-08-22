@@ -12,12 +12,58 @@ SeasonsOversheet4 <-  webpage %>%
   str_trim()
 
 
-season <- read_html(SeasonsOversheet4[1])
+SeasonDataTable_list <- data.frame()
+for (i in 1:5) {
+  season <- read_html(SeasonsOversheet4[i])
+  
+  SeaonTables <-  season %>%
+    html_nodes(xpath = '//*[@id="mw-content-text"]/div/table') %>%
+    html_table(header = T)
+  
+  
+  SeasonDataTable_raw<-as.data.frame(SeaonTables)
+  SeasonDataTable <- SeasonDataTable_raw[seq(from=1, to=length(SeasonDataTable_raw$Ep), by=2),]
+  descriptions <- SeasonDataTable_raw$Ep[seq(from=2, to=length(SeasonDataTable_raw$Ep), by=2)]
+  SeasonDataTable$Description <- descriptions
+  SeasonDataTable$season <- paste0("Season ", i)
+  colnames(SeasonDataTable) <- c("Eps", "Title","Writers", "Director", "Original_AirDate", "Description", "Season")
+  SeasonDataTable_list <- rbind(SeasonDataTable_list, SeasonDataTable)
+  print(i)
+}
 
-SeaonTables <-  season %>%
-  as.data.frame() %>%
-  html_nodes(xpath = '//*[@id="mw-content-text"]/div/table') %>%
-  html_table(header = T)
 
+  season <- read_html(SeasonsOversheet4[6])
+  
+  SeaonTables <-  season %>%
+    html_nodes(xpath = '//*[@id="mw-content-text"]/div/table') %>%
+    html_table(header = T)
+  
+  
+  SeasonDataTable_raw<-as.data.frame(SeaonTables)
+  SeasonDataTable <- SeasonDataTable_raw[seq(from=1, to=length(SeasonDataTable_raw$Ep), by=2),]
+  descriptions <- SeasonDataTable_raw$Ep[seq(from=2, to=length(SeasonDataTable_raw$Ep), by=2)]
+  SeasonDataTable$Description <- descriptions
+  SeasonDataTable$season <- paste0("Season ", 6)
+  SeasonDataTable <- SeasonDataTable[,-5]
+  colnames(SeasonDataTable) <- c("Eps", "Title","Writers", "Director", "Original_AirDate", "Description", "Season")
+  SeasonDataTable_list <- rbind(SeasonDataTable_list, SeasonDataTable)
+  print(i)
 
-check<-as.data.frame(SeaonTables)
+  
+  for (i in 7:11) {
+    season <- read_html(SeasonsOversheet4[i])
+    
+    SeaonTables <-  season %>%
+      html_nodes(xpath = '//*[@id="mw-content-text"]/div/table') %>%
+      html_table(header = T)
+    
+    
+    SeasonDataTable_raw<-as.data.frame(SeaonTables)
+    SeasonDataTable <- SeasonDataTable_raw[seq(from=1, to=length(SeasonDataTable_raw$Ep), by=2),]
+    descriptions <- SeasonDataTable_raw$Ep[seq(from=2, to=length(SeasonDataTable_raw$Ep), by=2)]
+    SeasonDataTable$Description <- descriptions
+    SeasonDataTable$season <- paste0("Season ", i)
+    colnames(SeasonDataTable) <- c("Eps", "Title","Writers", "Director", "Original_AirDate", "Description", "Season")
+    SeasonDataTable_list <- rbind(SeasonDataTable_list, SeasonDataTable)
+    print(i)
+  }
