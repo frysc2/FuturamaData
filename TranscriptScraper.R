@@ -75,13 +75,15 @@ for (i in 1:5) {
   SeasonDataTable_list$Title <- gsub("[\"/]", "", SeasonDataTable_list$Title)
   
   SeasonDataTable_list$URL <- paste0("https://futurama.fandom.com/wiki/", str_replace_all(SeasonDataTable_list$Title," ", "_"))
-
+  SeasonDataTable_list$URL[55] <- "https://futurama.fandom.com/wiki/The_30%25_Iron_Chef"
 ###########
 #### Transcript Extraction
 ###########
-  
 
-  webfile <- paste0(SeasonDataTable_list$URL[1], "/Transcript")
+transcipt_data_full  <- data.frame()
+    
+for(i in 55:length(SeasonDataTable_list$URL)){
+  webfile <- paste0(SeasonDataTable_list$URL[i], "/Transcript")
   webpage <- read_html(webfile)  
   
   Transcript <-  webpage %>%
@@ -107,8 +109,15 @@ for (i in 1:5) {
   transcipt_data$character[grep(":",transcipt_data$NoScenes)] <- str_split_fixed(transcipt_data$NoScenes[grep(":",transcipt_data$NoScenes)], ":", 2)[,1]
   
   table2<-data.frame(table(transcipt_data$character))
-
-########
-### Something else
+  transcipt_data <- transcipt_data[-(1:20),]
+  transcipt_data$title <- SeasonDataTable_list$Title[i]
+  transcipt_data$eps <- SeasonDataTable_list$Eps[i]
+  transcipt_data$season <- SeasonDataTable_list$Season[i]
+  
+  transcipt_data_full <- rbind(transcipt_data_full, transcipt_data)
+  print(SeasonDataTable_list$Title[i])
+}
+write.csv(SeasonDataTable_list, "~/GitHub/FuturamaData/SeasonDataTable_list.csv", row.names = F)
+write.csv(transcipt_data_full, "~/GitHub/FuturamaData/transcipt_data_full.csv", row.names = F)
   
   
