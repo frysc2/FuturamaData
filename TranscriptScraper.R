@@ -115,8 +115,15 @@ for(i in 55:length(SeasonDataTable_list$URL)){
   transcipt_data$season <- SeasonDataTable_list$Season[i]
   
   transcipt_data_full <- rbind(transcipt_data_full, transcipt_data)
+  
   print(SeasonDataTable_list$Title[i])
 }
+ 
+  transcipt_data_full$character <- str_trim(transcipt_data_full$character) 
+  transcipt_data_full$character <- str_remove(transcipt_data_full$character,  "<poem>")
+  transcipt_data_full$character <- str_remove(transcipt_data_full$character,  '"')
+  transcipt_data_full$character <- str_remove(transcipt_data_full$character,  '\\}')
+  transcipt_data_full$character <- str_remove(transcipt_data_full$character,  "'")
 write.csv(SeasonDataTable_list, "~/GitHub/FuturamaData/SeasonDataTable_list.csv", row.names = F)
 write.csv(transcipt_data_full, "~/GitHub/FuturamaData/transcipt_data_full.csv", row.names = F)
   
