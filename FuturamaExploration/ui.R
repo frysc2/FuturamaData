@@ -69,6 +69,8 @@ shinyUI(fluidPage(
                        ),
                        uiOutput("eps_type"),
                        uiOutput("character"),
+                       numericInput("top_n", "Select Number of Top Entries:", value = 10, min = 1, max = 30),
+                       
                        
       ) 
       

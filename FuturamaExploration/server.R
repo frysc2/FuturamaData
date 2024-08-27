@@ -8,11 +8,24 @@
 #
 
 library(shiny)
+library(shinyWidgets)
+library(dplyr)
+library(tables)
+library(maditr)
+library(stringr)
 library(ggplot2)
+library(readr)
+library(tidyverse)
+library(htmlwidgets)
+library(jsonlite)
+library(RColorBrewer) 
+library(DT)
+
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-
+  SeasonDataTable_list<=read.csv("../SeasonDataTable_list.csv")
+  transcipt_data_full<=read.csv("../transcipt_data_full.csv")
   ############################
   ### Match Stat Filter
   ############################
@@ -58,22 +71,32 @@ shinyServer(function(input, output) {
   
   
   characterTable <- reactive({
+    # Create a data frame with character counts
     df <- data.frame(table(character.data()$character))
     
-    df
+    # Rename columns for clarity
+    colnames(df) <- c("Name", "Amount")
+    
+    top_n <- input$top_n
+    # Arrange the data in descending order of frequency and select the top 10
+    df_top10 <- df %>%
+      arrange(desc(Amount)) %>%
+      head(top_n)
+    
+    df_top10
   })
-  
   
   output$character_Barchart <- renderPlot({ 
-    ggplot(characterTable(), aes(x = reorder(Var1,Freq), y = Freq)) +
+    ggplot(characterTable(), aes(x = reorder(Name, Amount), y = Amount)) +
       geom_bar(stat = "identity", fill = "blue") +
-      coord_flip()+
+      coord_flip() +
       theme_minimal() +
-      labs(title = "Bar Plot of Amount by Name",
-           x = "Name",
-           y = "Amount")+
+      labs(title = paste0("Top Characters by Lines"),
+           y = "Lines") +
+      xlab(NULL)+
       theme(axis.text.y = element_text(angle = 0, hjust = 1))
   })
+  
   
   ############################
 

@@ -73,7 +73,6 @@ for (i in 1:5) {
   
   
   SeasonDataTable_list$Title <- gsub("[\"/]", "", SeasonDataTable_list$Title)
-  
   SeasonDataTable_list$URL <- paste0("https://futurama.fandom.com/wiki/", str_replace_all(SeasonDataTable_list$Title," ", "_"))
   SeasonDataTable_list$URL[55] <- "https://futurama.fandom.com/wiki/The_30%25_Iron_Chef"
 ###########
@@ -81,9 +80,8 @@ for (i in 1:5) {
 ###########
 
 transcipt_data_full  <- data.frame()
-    
-for(i in 55:length(SeasonDataTable_list$URL)){
-  webfile <- paste0(SeasonDataTable_list$URL[i], "/Transcript")
+for(i in 1:length(SeasonDataTable_list$URL)){
+  webfile <- URLencode(paste0(SeasonDataTable_list$URL[i], "/Transcript"))
   webpage <- read_html(webfile)  
   
   Transcript <-  webpage %>%
@@ -92,6 +90,7 @@ for(i in 55:length(SeasonDataTable_list$URL)){
 
   transcipt_data<-data.frame(str_split(Transcript, "\n") ) 
   colnames(transcipt_data) <- "raw"
+  transcipt_data$raw <- str_remove(string =transcipt_data$raw, "Page Template:Mono/styles.css has no content.[0-9][0-9]" )
   
   sceneCheck <- data.frame(str_split_fixed(transcipt_data$raw, "[()]", 6))
   colnames(sceneCheck) <- c("Dialog_1", "Scene_1",  "Dialog_2", "Scene_2", "Dialog_3", "Scene_3")
@@ -115,12 +114,14 @@ for(i in 55:length(SeasonDataTable_list$URL)){
   transcipt_data$season <- SeasonDataTable_list$Season[i]
   
   transcipt_data_full <- rbind(transcipt_data_full, transcipt_data)
-  
+  print(i)
   print(SeasonDataTable_list$Title[i])
 }
- 
+
+  transcipt_data_full <- transcipt_data_full[-(grep("00", transcipt_data_full$character)),]
   transcipt_data_full$character <- str_trim(transcipt_data_full$character) 
   transcipt_data_full$character <- str_remove(transcipt_data_full$character,  "<poem>")
+  transcipt_data_full$character <- str_remove(transcipt_data_full$character,  "Professor ")
   transcipt_data_full$character <- str_remove(transcipt_data_full$character,  '"')
   transcipt_data_full$character <- str_remove(transcipt_data_full$character,  '\\}')
   transcipt_data_full$character <- str_remove(transcipt_data_full$character,  "'")
