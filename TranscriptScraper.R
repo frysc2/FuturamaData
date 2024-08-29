@@ -125,6 +125,7 @@ for(i in 1:length(SeasonDataTable_list$URL)){
   transcipt_data_full$character <- str_remove(transcipt_data_full$character,  '"')
   transcipt_data_full$character <- str_remove(transcipt_data_full$character,  '\\}')
   transcipt_data_full$character <- str_remove(transcipt_data_full$character,  "'")
+  transcipt_data_full$character <- str_trunc(transcipt_data_full$character,  20)
 write.csv(SeasonDataTable_list, "~/GitHub/FuturamaData/SeasonDataTable_list.csv", row.names = F)
 write.csv(transcipt_data_full, "~/GitHub/FuturamaData/transcipt_data_full.csv", row.names = F)
   

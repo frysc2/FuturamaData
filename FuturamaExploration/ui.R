@@ -8,6 +8,18 @@
 #
 
 library(shiny)
+library(shinyWidgets)
+library(dplyr)
+library(tables)
+library(maditr)
+library(stringr)
+library(ggplot2)
+library(readr)
+library(tidyverse)
+library(htmlwidgets)
+library(jsonlite)
+library(RColorBrewer) 
+library(DT)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
@@ -42,9 +54,21 @@ shinyUI(fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      
       conditionalPanel(condition="input.conditionedPanels==1",
-                       helpText("Content Panel 1"),
+                       helpText("Lines Per Episode"),
+                       pickerInput(inputId = "Season", 
+                                   choices = unique(transcipt_data_full$season),
+                                   selected = unique(transcipt_data_full$season)[1]
+                                   , label = "Season", options = list(`actions-box` = TRUE),multiple = T
+                       ),
+                       uiOutput("eps_type"),
+                       uiOutput("character"),
+                       numericInput("top_n", "Select Number of Top Entries:", value = 10, min = 1, max = 30),
+                       
+                       
+      ),
+      conditionalPanel(condition="input.conditionedPanels==4",
+                       helpText("Content Panel 4"),
                        uiOutput("team_name"),
                        uiOutput("player_name"),
                        uiOutput("hero_name"),
@@ -60,19 +84,7 @@ shinyUI(fluidPage(
                        
                        
       ),
-      conditionalPanel(condition="input.conditionedPanels==4",
-                       helpText("Content Panel 4"),
-                       pickerInput(inputId = "Season", 
-                                   choices = unique(transcipt_data_full$season),
-                                   selected = unique(transcipt_data_full$season)[1]
-                                   , label = "Season", options = list(`actions-box` = TRUE),multiple = T
-                       ),
-                       uiOutput("eps_type"),
-                       uiOutput("character"),
-                       numericInput("top_n", "Select Number of Top Entries:", value = 10, min = 1, max = 30),
-                       
-                       
-      ) 
+      
       
       
       # selectInput(inputId = "Team2", 
@@ -87,11 +99,30 @@ shinyUI(fluidPage(
     # Show a plot of the generated distribution
     mainPanel(
       tabsetPanel(
+        tabPanel("Lines Per Episode",
+                 #                    fluidRow(
+                 #                      br(),
+                 #                      column(3,
+                 #                             uiOutput("stat_for_hist")
+                 #                      ),
+                 #                      column(3,
+                 #                             uiOutput("Hero_for_hist")
+                 
+                 #                      ),
+                 #                    ),
+                 
+                 
+                 plotOutput("character_Barchart"),
+                 tableOutput("characterTable"),
+                 downloadButton("downloadPlot", "Download Plot"),
+                 
+                 value = 1
+        ),
         tabPanel("Map Table",
                  
                  tableOutput("table"),
                  tableOutput("table2"),
-                 value = 1
+                 value = 4
                  
         ),
         tabPanel("Stats",
@@ -109,27 +140,7 @@ shinyUI(fluidPage(
                  plotOutput("PlayerHeroTable"),
                  value = 3
         ),
-        tabPanel("Match Stat Filter",
-                 #                    fluidRow(
-                 #                      br(),
-                 #                      column(3,
-                 #                             uiOutput("stat_for_hist")
-                 #                      ),
-                 #                      column(3,
-                 #                             uiOutput("Hero_for_hist")
-                 
-                 #                      ),
-                 #                    ),
-                 
-                 
-                 plotOutput("character_Barchart"),
-                 tableOutput("TeamWide_MainStat"),
-                 downloadButton("save", "save"),
-                 tableOutput("TeamwideData"),
-                 tableOutput("debug_season_data"),
-                 verbatimTextOutput("debug_eps_type"),
-                 value = 4
-        ),
+        
         id = "conditionedPanels"
       )
       

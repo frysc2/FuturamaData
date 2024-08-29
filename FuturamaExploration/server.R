@@ -24,8 +24,8 @@ library(DT)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-  SeasonDataTable_list<=read.csv("../SeasonDataTable_list.csv")
-  transcipt_data_full<=read.csv("../transcipt_data_full.csv")
+  SeasonDataTable_list<-read.csv("SeasonDataTable_list.csv")
+  transcipt_data_full<-read.csv("transcipt_data_full.csv")
   ############################
   ### Match Stat Filter
   ############################
@@ -42,7 +42,8 @@ shinyServer(function(input, output) {
                 choices = unique(eps_type),
                 selected = eps_type[1]
                 
-                , label = "eps_type" , options = list(`actions-box` = TRUE),multiple = T
+                , label = "Episode(s)" , options = list(`actions-box` = TRUE,   
+                                                        `live-search` = TRUE),multiple = T
     )
     
   })
@@ -56,7 +57,8 @@ shinyServer(function(input, output) {
     pickerInput(inputId = "character", 
                 choices = unique(character),
                 selected = character[2]
-                , label = "character" , options = list(`actions-box` = TRUE),multiple = T
+                , label = "Character(s)" , options = list(`actions-box` = TRUE,   
+                                                          `live-search` = TRUE),multiple = T
     )   
   })
   
@@ -71,33 +73,86 @@ shinyServer(function(input, output) {
   
   
   characterTable <- reactive({
-    # Create a data frame with character counts
     df <- data.frame(table(character.data()$character))
     
-    # Rename columns for clarity
+    
     colnames(df) <- c("Name", "Amount")
     
     top_n <- input$top_n
-    # Arrange the data in descending order of frequency and select the top 10
     df_top10 <- df %>%
       arrange(desc(Amount)) %>%
       head(top_n)
     
     df_top10
   })
+  color_mapping <- data.frame(
+    Name = c("Fry", "Leela", "Bender", "Farnsworth", "Zoidberg", "Amy", "Kif", "Hermes", "Zapp", "Mom", "Robot Devil", "Lrrr", "Calculon", "Cubert"),
+    color = c("orange", "purple", "#c0c0c0", "#b1dedc","#E37775","#F1ACC9", "#B3D08E", "#4B9033", "#F5F073", "#129189", "red", "brown", "gold", "#18E4FA" )
+  )
+  color_mapping_default <- data.frame(
+    Name = "Default",
+    color = "black"
+  )
+  color_mapping <- rbind(color_mapping, color_mapping_default)
+  
+  characterTable_color <- reactive({
+    data_with_colors <- characterTable() %>%
+      left_join(color_mapping, by = "Name") %>%
+      mutate(color = ifelse(is.na(color), "black", color))
+    data_with_colors
+  })
+  output$characterTable <- renderTable({
+    characterTable_color()
+  })
   
   output$character_Barchart <- renderPlot({ 
-    ggplot(characterTable(), aes(x = reorder(Name, Amount), y = Amount)) +
-      geom_bar(stat = "identity", fill = "blue") +
+    ggplot(characterTable_color(), aes(x = reorder(Name, Amount), y = Amount, fill = color)) +
+      geom_bar(stat = "identity") +
+      geom_text(aes(label = Amount), 
+                hjust = -0.1,        
+                size = 5,            
+                color = "black") +
       coord_flip() +
+      scale_fill_identity() +
       theme_minimal() +
       labs(title = paste0("Top Characters by Lines"),
            y = "Lines") +
       xlab(NULL)+
-      theme(axis.text.y = element_text(angle = 0, hjust = 1))
+      theme(axis.text.y = element_text(angle = 0, hjust = 1))+  
+      theme(
+        axis.title.x = element_text(size = 14, color = "black"), 
+        axis.title.y = element_text(size = 14, color = "black"), 
+        axis.text.x = element_text(size = 14, color = "black"), 
+        axis.text.y = element_text(size = 14, color = "black")
+      )
   })
-  
-  
+  output$downloadPlot <- downloadHandler(
+    filename = function() {
+      paste("myplot", Sys.Date(), ".png", sep = "")
+    },
+    content = function(file) {
+      g <- ggplot(characterTable(), aes(x = reorder(Name, Amount), y = Amount)) +
+        geom_bar(stat = "identity", fill = "blue") +
+        geom_text(aes(label = Amount), 
+                  hjust = -0.1,        
+                  size = 5,            
+                  color = "blue") +
+        coord_flip() +
+        theme_minimal() +
+        labs(title = paste0("Top Characters by Lines"),
+             y = "Lines") +
+        xlab(NULL)+
+        theme(axis.text.y = element_text(angle = 0, hjust = 1), 
+              plot.margin = margin(10, 40, 10, 10))+  
+        theme(
+          axis.title.x = element_text(size = 14, color = "red"), 
+          axis.title.y = element_text(size = 14, color = "green"), 
+          axis.text.x = element_text(size = 14, color = "red"), 
+          axis.text.y = element_text(size = 14, color = "green")
+          
+        )
+      ggsave(file, plot = g, device = "png", width = 10, height = 5, units = "in")
+    })
   ############################
 
 })
