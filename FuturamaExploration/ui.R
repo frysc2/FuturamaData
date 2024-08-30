@@ -69,11 +69,13 @@ shinyUI(fluidPage(
                        
       ),
       conditionalPanel(condition="input.conditionedPanels==4",
-                       helpText("Content Panel 4"),
-                       uiOutput("team_name"),
-                       uiOutput("player_name"),
-                       uiOutput("hero_name"),
-                       uiOutput("stat_name") 
+                       helpText("Line and dot"),
+                       pickerInput(inputId = "Season_line", 
+                                   choices = unique(transcipt_data_full$season),
+                                   selected = unique(transcipt_data_full$season)[1]
+                                   , label = "Season", options = list(`actions-box` = TRUE),multiple = T
+                       ),
+                       uiOutput("character_season"), 
       ),
       conditionalPanel(condition="input.conditionedPanels==2",
                        helpText("Content Panel 2"),
@@ -119,28 +121,29 @@ shinyUI(fluidPage(
                  
                  value = 1
         ),
-        tabPanel("Map Table",
+        tabPanel("Lines Over Time",
+                 plotOutput("character_LinePlot"),
                  
-                 tableOutput("table"),
-                 tableOutput("table2"),
+                 tableOutput("character_season.data"),
+                 
                  value = 4
                  
         ),
-        tabPanel("Stats",
-                 tableOutput("demo_text"),
+       # tabPanel("Stats",
+       #          tableOutput("demo_text"),
                  
-                 value = 2
-        ),
-        tabPanel("Player Stats",
-                 textOutput("gamesPlayed"),
-                 textOutput("playerStatDataFrame"),
-                 textOutput("role"),
-                 tableOutput("role1"),
-                 tableOutput("playerStatsTable_general"),
-                 tableOutput("TimeplayedData"),
-                 plotOutput("PlayerHeroTable"),
-                 value = 3
-        ),
+       #          value = 2
+       # ),
+        #tabPanel("Player Stats",
+        #         textOutput("gamesPlayed"),
+         #        textOutput("playerStatDataFrame"),
+         #        textOutput("role"),
+          #       tableOutput("role1"),
+         #        tableOutput("playerStatsTable_general"),
+          #       tableOutput("TimeplayedData"),
+          #       plotOutput("PlayerHeroTable"),
+          #       value = 3
+        #),
         
         id = "conditionedPanels"
       )

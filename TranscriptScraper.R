@@ -33,7 +33,7 @@ for (i in 1:5) {
   SeasonDataTable_list <- rbind(SeasonDataTable_list, SeasonDataTable)
   print(i)
 }
-
+SeasonDataTable_list$Order <- 1:length(SeasonDataTable_list$Eps)
 
   season <- read_html(SeasonsOversheet4[6])
   

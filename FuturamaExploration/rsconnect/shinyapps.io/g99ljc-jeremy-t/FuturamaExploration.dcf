@@ -5,9 +5,9 @@ account: g99ljc-jeremy-t
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12560088
-bundleId: 9041047
+bundleId: 9044756
 url: https://g99ljc-jeremy-t.shinyapps.io/FuturamaExploration/
-when: 1724970793.7081
-lastSyncTime: 1724970793.7081
+when: 1725053252.05791
+lastSyncTime: 1725053252.05791
 asMultiple: FALSE
 asStatic: FALSE
