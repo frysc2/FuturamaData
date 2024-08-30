@@ -20,7 +20,8 @@ library(htmlwidgets)
 library(jsonlite)
 library(RColorBrewer) 
 library(DT)
-
+SeasonDataTable_list<-read.csv("SeasonDataTable_list.csv")
+transcipt_data_full<-read.csv("transcipt_data_full.csv")
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
   

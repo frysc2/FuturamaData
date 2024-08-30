@@ -20,12 +20,12 @@ library(htmlwidgets)
 library(jsonlite)
 library(RColorBrewer) 
 library(DT)
-
+SeasonDataTable_list<-read.csv("SeasonDataTable_list.csv")
+transcipt_data_full<-read.csv("transcipt_data_full.csv")
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-  SeasonDataTable_list<-read.csv("SeasonDataTable_list.csv")
-  transcipt_data_full<-read.csv("transcipt_data_full.csv")
+
   ############################
   ### Match Stat Filter
   ############################
@@ -131,25 +131,24 @@ shinyServer(function(input, output) {
       paste("myplot", Sys.Date(), ".png", sep = "")
     },
     content = function(file) {
-      g <- ggplot(characterTable(), aes(x = reorder(Name, Amount), y = Amount)) +
-        geom_bar(stat = "identity", fill = "blue") +
+      g <- ggplot(characterTable_color(), aes(x = reorder(Name, Amount), y = Amount, fill = color)) +
+        geom_bar(stat = "identity") +
         geom_text(aes(label = Amount), 
                   hjust = -0.1,        
                   size = 5,            
-                  color = "blue") +
+                  color = "black") +
         coord_flip() +
+        scale_fill_identity() +
         theme_minimal() +
         labs(title = paste0("Top Characters by Lines"),
              y = "Lines") +
         xlab(NULL)+
-        theme(axis.text.y = element_text(angle = 0, hjust = 1), 
-              plot.margin = margin(10, 40, 10, 10))+  
+        theme(axis.text.y = element_text(angle = 0, hjust = 1))+  
         theme(
-          axis.title.x = element_text(size = 14, color = "red"), 
-          axis.title.y = element_text(size = 14, color = "green"), 
-          axis.text.x = element_text(size = 14, color = "red"), 
-          axis.text.y = element_text(size = 14, color = "green")
-          
+          axis.title.x = element_text(size = 14, color = "black"), 
+          axis.title.y = element_text(size = 14, color = "black"), 
+          axis.text.x = element_text(size = 14, color = "black"), 
+          axis.text.y = element_text(size = 14, color = "black")
         )
       ggsave(file, plot = g, device = "png", width = 10, height = 5, units = "in")
     })
